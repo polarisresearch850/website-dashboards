@@ -82,13 +82,18 @@
 </head>
 <body>
   <iframe id="frame" title="Dashboard" style="display:none;"></iframe>
-  <div class="empty" id="empty" style="display:none;">Dashboard not found.</div>
+  <div class="empty" id="empty" style="display:none;">No market selected. Add a market to the link, for example ?m=sf</div>
 
 <script>
   (function () {
     const frame = document.getElementById("frame");
     const empty = document.getElementById("empty");
-    const key = (new URLSearchParams(location.search).get("m") || "").trim().toLowerCase();
+    // Accepts ?m=sf, ?m=1, #sf, or #1 (number = position in the list, like the old index)
+    const raw = (new URLSearchParams(location.search).get("m") ||
+                 location.hash.replace("#", "") || "").trim().toLowerCase();
+    const keys = Object.keys(DASHBOARDS);
+    const n = parseInt(raw, 10);
+    const key = (String(n) === raw && n >= 1 && n <= keys.length) ? keys[n - 1] : raw;
     const d = DASHBOARDS[key];
 
     if (!d) {
