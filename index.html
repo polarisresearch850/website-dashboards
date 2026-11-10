@@ -104,8 +104,20 @@
 
     document.title = d.label + " | " + SITE_TITLE;
     frame.title = d.label + " Dashboard";
-    frame.src = BASE_URL + d.file;
-    frame.style.display = "block";
+    const url = BASE_URL + d.file;
+
+    // Check the dashboard file exists before showing it, so a missing file
+    // gives a clear message instead of a blank page.
+    fetch(url, { method: "HEAD", cache: "no-store" })
+      .then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        frame.src = url;
+        frame.style.display = "block";
+      })
+      .catch(function () {
+        empty.textContent = "Could not find " + d.file + ". Upload it to this repo next to index.html.";
+        empty.style.display = "flex";
+      });
   })();
 </script>
 </body>
